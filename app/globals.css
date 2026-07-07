@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: #0a0a0a;
+  --primary-foreground: #fafafa;
+  --input: #e4e4e7;
+  --ring: #18181b;
+}
+
+html.dark {
+  --primary: #fafafa;
+  --primary-foreground: #0a0a0a;
+  --input: #3f3f46;
+  --ring: #d4d4d8;
+}
+
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+@layer utilities {
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    min-width: 100%;
+    animation: promo-marquee 22s linear infinite;
+  }
+  .marquee-group {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 3rem;
+    padding-right: 3rem;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .premium-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .premium-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes promo-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-jost);
+  --font-mono: var(--font-jost);
+}
+
+/* Manual dark mode (toggled by adding .dark on <html>). */
+html.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-jost), Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/*
+ * Site-wide dark mode overrides.
+ * Maps the common Tailwind surface / text / border utilities used across
+ * the app to dark equivalents when html.dark is set, so existing components
+ * automatically flip without needing dark: variants on every class.
+ */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark .bg-white { background-color: #0f0f10 !important; }
+html.dark .bg-black { background-color: #f4f4f5 !important; }
+html.dark .bg-zinc-50,
+html.dark .bg-zinc-50\/50,
+html.dark .bg-zinc-50\/30 { background-color: #111113 !important; }
+html.dark .bg-zinc-100 { background-color: #1a1a1d !important; }
+html.dark .bg-zinc-200 { background-color: #232327 !important; }
+html.dark .bg-emerald-50 { background-color: #052e21 !important; }
+html.dark .bg-amber-50 { background-color: #2a1d05 !important; }
+html.dark .bg-red-50 { background-color: #2a0a0a !important; }
+
+html.dark .text-black { color: #f4f4f5 !important; }
+html.dark .text-white { color: #0a0a0a !important; }
+html.dark .text-zinc-900 { color: #f4f4f5 !important; }
+html.dark .text-zinc-800 { color: #e4e4e7 !important; }
+html.dark .text-zinc-700 { color: #d4d4d8 !important; }
+html.dark .text-zinc-600 { color: #a1a1aa !important; }
+html.dark .text-zinc-500 { color: #8b8b90 !important; }
+html.dark .text-zinc-400 { color: #6b6b70 !important; }
+html.dark .text-zinc-300 { color: #4d4d52 !important; }
+
+html.dark .border-zinc-50 { border-color: #1f1f22 !important; }
+html.dark .border-zinc-100 { border-color: #27272a !important; }
+html.dark .border-zinc-200 { border-color: #3f3f46 !important; }
+html.dark .border-zinc-300 { border-color: #52525b !important; }
+html.dark .divide-zinc-50 > * + * { border-color: #1f1f22 !important; }
+html.dark .divide-zinc-100 > * + * { border-color: #27272a !important; }
+
+html.dark .ring-white { --tw-ring-color: #0a0a0a !important; }
+html.dark .shadow-sm,
+html.dark .shadow,
+html.dark .shadow-md,
+html.dark .shadow-lg,
+html.dark .shadow-xl,
+html.dark .shadow-2xl { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.4) !important; }
+
+html.dark img { filter: brightness(0.92) contrast(1.02); }
+html.dark .invert-on-dark { filter: invert(1); }
+
+.animate-text-reveal {
+  background: linear-gradient(to right, #ffffff, #ffffff 50%, #71717a 50%);
+  background-size: 200% 100%;
+  background-position-x: 100%;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  transition: background-position-x 0.6s ease-in-out;
+}
+
+.animate-text-reveal:hover {
+  background-position-x: 0%;
+}

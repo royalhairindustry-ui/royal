@@ -1,0 +1,230 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id             Int        @id @default(autoincrement())
+  name           String
+  slug           String     @unique
+  description    String?
+  banner         String?
+  featuredBanner String?
+  circleImage    String?
+  circleColor    String?
+  backgroundColor String?
+  isFeatured     Boolean    @default(false)
+  parentId       Int?
+  parent         Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children       Category[] @relation("CategoryHierarchy")
+  products       Product[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Color {
+  id        Int       @id @default(autoincrement())
+  name      String
+  hex       String    @unique
+  code      String?
+  products  Product[] @relation("ProductColors")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id           Int                 @id @default(autoincrement())
+  name         String
+  slug         String              @unique
+  description  String?
+  priceInCents Int
+  compareAtPriceInCents Int? // "was" price for discount framing; null = no discount shown
+  stock        Int                 @default(0)
+  unit         String              @default("Piece")
+  status       String              @default("Active")
+  isFeatured   Boolean             @default(false)
+  image        String?
+  hoverImage   String?
+  categoryId   Int
+  category     Category            @relation(fields: [categoryId], references: [id])
+  colors       Color[]             @relation("ProductColors")
+  variations   Variation[]
+  unitOptions  ProductUnitOption[]
+  orderItems   OrderItem[]
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+}
+
+model ProductUnitOption {
+  id           Int      @id @default(autoincrement())
+  label        String
+  unit         String
+  priceInCents Int
+  compareAtPriceInCents Int?
+  stock        Int      @default(0)
+  sortOrder    Int      @default(0)
+  productId    Int
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Variation {
+  id        Int     @id @default(autoincrement())
+  type      String // e.g. Length, Texture
+  value     String // e.g. 24 inch, Silky
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model SizeGuide {
+  id    Int     @id @default(autoincrement())
+  type  String // e.g. Braids, Weaves
+  packs String? // e.g. 3-5 packs
+  sizes Size[]
+}
+
+model Size {
+  id          Int       @id @default(autoincrement())
+  label       String // e.g. Shoulder (12")
+  sizeGuideId Int
+  sizeGuide   SizeGuide @relation(fields: [sizeGuideId], references: [id])
+}
+
+model Unit {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  usage     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Reel {
+  id           Int      @id @default(autoincrement())
+  video        String
+  poster       String?
+  productImage String?
+  title        String
+  price        String
+  link         String?  @default("/products")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  fullName  String
+  phone     String   @unique
+  password  String
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id           Int         @id @default(autoincrement())
+  orderNumber  String      @unique
+  totalCents   Int
+  status       String      @default("Pending") // Pending, Paid, Shipped, Delivered, Cancelled
+  customerName String
+  email        String
+  phone        String
+  address      String
+  city         String
+  userId       Int?
+  user         User?       @relation(fields: [userId], references: [id])
+  items        OrderItem[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Int // Price at time of purchase
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id])
+}
+
+model HomeSection {
+  id        Int      @id @default(autoincrement())
+  type      String   @unique // e.g. "HeroCarousel", "CategoryCircles", "MoodProducts", "FeaturedCategories", "LatestProducts"
+  title     String
+  order     Int      @default(0)
+  isVisible Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+model TopbarMessage {
+  id        Int      @id @default(autoincrement())
+  text      String
+  order     Int      @default(0)
+  isVisible Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HeaderNavItem {
+  id        Int      @id @default(autoincrement())
+  name      String
+  href      String
+  order     Int      @default(0)
+  isVisible Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSettings {
+  id           Int      @id @default(1)
+  logoUrl      String?
+  ugFlagUrl    String?
+  contactEmail String?
+  contactPhone String?
+  updatedAt    DateTime @updatedAt
+}
+
+model CustomerConversation {
+  id              Int               @id @default(autoincrement())
+  sessionId       String            @unique
+  status          String            @default("OPEN")
+  customerPhone   String?
+  messages        CustomerMessage[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  latestMessageAt DateTime          @default(now())
+}
+
+model BlogPost {
+  id          Int       @id @default(autoincrement())
+  title       String
+  slug        String    @unique
+  excerpt     String?
+  coverImage  String?
+  body        String
+  author      String?
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([isPublished, publishedAt])
+}
+
+model CustomerMessage {
+  id                Int                  @id @default(autoincrement())
+  conversationId    Int
+  conversation      CustomerConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender            String
+  channel           String               @default("WEB")
+  text              String
+  whatsappMessageId String?
+  createdAt         DateTime             @default(now())
+
+  @@index([conversationId, createdAt])
+}
