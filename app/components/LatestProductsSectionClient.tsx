@@ -6,6 +6,7 @@ import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 import PriceTag from "./PriceTag";
 import DiscountBadge from "./DiscountBadge";
+import { getMockRating } from "@/lib/mock-rating";
 
 interface Product {
   id: number;
@@ -20,6 +21,8 @@ interface Product {
 }
 
 function ProductCard({ product }: { product: Product }) {
+  const { rating } = getMockRating(product.id);
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 30 }}
@@ -87,9 +90,14 @@ function ProductCard({ product }: { product: Product }) {
           </Link>
         </h3>
 
-        <div className="mt-3 flex items-center gap-0.5 text-black">
+        <div className="mt-3 flex items-center gap-0.5">
           {[...Array(5)].map((_, i) => (
-            <Star key={i} className="h-3.5 w-3.5 fill-black text-black" />
+            <Star
+              key={i}
+              className={`h-3.5 w-3.5 ${
+                i < Math.round(rating) ? "fill-[#D4AF37] text-[#D4AF37]" : "text-zinc-300"
+              }`}
+            />
           ))}
         </div>
 

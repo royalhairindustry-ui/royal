@@ -5,6 +5,7 @@ import { unstable_noStore as noStore } from "next/cache";
 import PriceTag from "./PriceTag";
 import DiscountBadge from "./DiscountBadge";
 import { cdnImage } from "@/lib/cdn-image";
+import { getMockRating } from "@/lib/mock-rating";
 
 async function getFeaturedCategories() {
   noStore();
@@ -72,7 +73,9 @@ export default async function FeaturedCategorySections() {
               <div className="flex flex-col gap-2 md:gap-4">
                 {/* Product Cards — Scrollable */}
                 <div className={`scrollbar-hide flex-1 snap-x snap-mandatory gap-2 overflow-x-auto pb-10 select-none md:gap-3 cursor-grab active:cursor-grabbing ${category.products.length > 5 ? "grid grid-rows-2 grid-flow-col auto-cols-max" : "flex"}`}>
-                  {category.products.map((product) => (
+                  {category.products.map((product) => {
+                    const { rating } = getMockRating(product.id);
+                    return (
                     <Link
                       key={product.id}
                       href={`/products/${product.slug}`}
@@ -127,12 +130,17 @@ export default async function FeaturedCategorySections() {
                             <h3 className="line-clamp-2 text-[14px] sm:text-[17px] font-semibold leading-[1.25] text-black group-hover:underline underline-offset-4 uppercase tracking-tight">
                               {product.name}
                             </h3>
-                            <div className="mt-3 flex items-center gap-1 text-black">
-                              <Star className="h-4 w-4 fill-black text-black" />
-                              <Star className="h-4 w-4 fill-black text-black" />
-                              <Star className="h-4 w-4 fill-black text-black" />
-                              <Star className="h-4 w-4 fill-black text-black" />
-                              <Star className="h-4 w-4 text-black" />
+                            <div className="mt-3 flex items-center gap-1">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-4 w-4 ${
+                                    i < Math.round(rating)
+                                      ? "fill-[#D4AF37] text-[#D4AF37]"
+                                      : "text-zinc-300"
+                                  }`}
+                                />
+                              ))}
                             </div>
                           </div>
                           <PriceTag
@@ -143,7 +151,8 @@ export default async function FeaturedCategorySections() {
                         </div>
                       </article>
                     </Link>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
